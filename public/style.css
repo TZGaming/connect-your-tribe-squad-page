@@ -165,7 +165,8 @@ section {
         height: 50vh;
 
         @media screen and (max-width: 700px) {
-            top: 60%;
+            left: 47%;
+            top: 57%;
             height: 80vh;
         }
 
@@ -202,8 +203,8 @@ section {
                 transition: transform 0.2s;
 
                 @media screen and (max-width: 700px) {
-                    width: 9vw;
-                    height: 9vw;
+                    width: 12vw;
+                    height: 12vw;
                 }
 
                 &:hover {
