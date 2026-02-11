@@ -86,6 +86,7 @@ async function startBackgroundMusic() {
 }
 
 // Verander muziek met een button, switched tussen Wii en Wii U met behulp van booleans
+// Heeft ook een crossfade van 0.1s
 musicButton.addEventListener('click', () => {
     if (isWiiUActive) {
         gainWiiU.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
