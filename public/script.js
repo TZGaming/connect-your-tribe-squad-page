@@ -1,27 +1,32 @@
+// Variabelen
 let titleOverlay = document.querySelector('.title-overlay')
 let leftScreenContent = document.querySelector('.onscreen-items-left')
 let musicButton = document.querySelector('.wii-u-music-button');
 let personenContainer = document.querySelector('.personen');
 let personCircles = document.querySelectorAll('.personen article a');
 
+// Audio speler die op de website word gebruikt, vervangt de standaard speler voor minder latency
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = audioCtx.createGain();
 
-gainNode.gain.value = 0.8;
-gainNode.connect(audioCtx.destination);
+// Standaard volume
+// gainNode.gain.value = 0.8;
+// gainNode.connect(audioCtx.destination);
 
-// Extra gain nodes
+// Extra volume gain nodes voor de muziek
 let gainWii = audioCtx.createGain();
 let gainWiiU = audioCtx.createGain();
 gainWii.connect(gainNode);
 gainWiiU.connect(gainNode);
 
-let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer;
-let isWiiUActive = false;
-
+// Start boot sequence functie on click op title screen
 titleOverlay.addEventListener('click', function () {
     startBackgroundMusic()
 })
+
+// Gebruik audioCtx buffer om de sounds en muziek te pre-loaden
+let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer;
+let isWiiUActive = false;
 
 async function loadAllSounds() {
     try {
@@ -41,6 +46,8 @@ async function loadAllSounds() {
     }
 }
 
+// Boot sequence activatie
+// Classes toevoegen en muziek afspelen
 async function startBackgroundMusic() {
     if (audioCtx.state === 'suspended') {
         await audioCtx.resume();
@@ -57,6 +64,8 @@ async function startBackgroundMusic() {
         personenContainer.classList.add('activate');
     }, 250);
 
+    // Muziek tegelijk afspelen, Wii U standaard muted
+    // Wii speelt standaard
     setTimeout(() => {
         const sourceWii = audioCtx.createBufferSource();
         sourceWii.buffer = musicWiiBuffer;
@@ -74,6 +83,7 @@ async function startBackgroundMusic() {
     }, 700);
 }
 
+// Verander muziek met een button, switched tussen Wii en Wii U met behulp van booleans
 musicButton.addEventListener('click', () => {
     if (isWiiUActive) {
         gainWiiU.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
@@ -85,6 +95,7 @@ musicButton.addEventListener('click', () => {
     isWiiUActive = !isWiiUActive;
 });
 
+// Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
     const onSource = audioCtx.createBufferSource();
     onSource.buffer = onButtonBuffer;
@@ -101,4 +112,5 @@ personCircles.forEach(circle => {
     });
 });
 
+// Pre-load alle sounds als de website word geladen
 loadAllSounds();

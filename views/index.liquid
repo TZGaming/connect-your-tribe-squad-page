@@ -15,7 +15,20 @@
   <section class="personen">
     {% for person in persons %}
       <article>
-        <a class="person-circle" style="outline: {{ person.fav_color }} 4px solid;" href="/student/{{ person.id }}" target="_blank"><img src="https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500" alt="Profile picture"></a>
+        <a
+          class="person-circle"
+          style="outline: {{ person.fav_color }} 4px solid;"
+          href="/student/{{ person.id }}"
+          target="_blank">
+          <img
+            {% if person.mugshot %}
+              src="{{'https://fdnd.directus.app/assets/' | append:  person.mugshot | append:'?width=500' }}"
+            {% else %}
+              src="{{ person.avatar }}"
+            {% endif %}
+            src="https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500"
+            alt="Profile picture"
+        ></a>
       </article>
     {% endfor %}
   </section>
