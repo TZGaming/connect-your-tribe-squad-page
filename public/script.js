@@ -3,15 +3,17 @@ let titleOverlay = document.querySelector('.title-overlay')
 let leftScreenContent = document.querySelector('.onscreen-items-left')
 let musicButton = document.querySelector('.wii-u-music-button');
 let personenContainer = document.querySelector('.personen');
+let personAll = document.querySelectorAll('.person-all');
 let personCircles = document.querySelectorAll('.personen article a');
+let personenOverlay = document.querySelectorAll('.person-overlay');
 
 // Audio speler die op de website word gebruikt, vervangt de standaard speler voor minder latency
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let gainNode = audioCtx.createGain();
 
 // Standaard volume
-// gainNode.gain.value = 0.8;
-// gainNode.connect(audioCtx.destination);
+gainNode.gain.value = 0.8;
+gainNode.connect(audioCtx.destination);
 
 // Extra volume gain nodes voor de muziek
 let gainWii = audioCtx.createGain();
@@ -61,7 +63,7 @@ async function startBackgroundMusic() {
 
     setTimeout(() => {
         leftScreenContent.classList.add('activate');
-        personenContainer.classList.add('activate');
+        personAll.forEach(personAll => personAll.classList.toggle('activate'));
     }, 250);
 
     // Muziek tegelijk afspelen, Wii U standaard muted
@@ -109,6 +111,21 @@ personCircles.forEach(circle => {
         onSource.buffer = onButtonBuffer;
         onSource.connect(audioCtx.destination);
         onSource.start(0);
+    });
+});
+
+personCircles.forEach(circle => {
+    circle.addEventListener('mouseenter', () => {
+        const onSource = audioCtx.createBufferSource();
+        onSource.buffer = onButtonBuffer;
+        onSource.connect(audioCtx.destination);
+        onSource.start(0);
+    });
+});
+
+personCircles.forEach(circle => {
+    circle.addEventListener('click', () => {
+        personenOverlay.forEach(overlay => overlay.classList.toggle('activate-overlay'));
     });
 });
 

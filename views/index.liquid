@@ -7,28 +7,39 @@
 
   <section class="onscreen-content-left">
     <article class="onscreen-items-left">
-      <h1>Pagina in de maak...</h1>
       <div class="wii-u-music-button"><img src="img/wii-u.svg" width="60vw"></div>
     </article>
   </section>
 
   <section class="personen">
     {% for person in persons %}
-      <article>
+      <article class="person-all">
+        <div class="person-overlay">
+          {% if person.name == 'Gijs Nagtegaal' %}
+            <h2>{{ person.name }}</h2>
+            <p>Kut gijs, verander je bio</p>
+            <p>Team {{ person.team }}</p>
+            <p>Woonplaats: {{ person.residency }}</p>
+            <p>Favoriete kleur: {{ person.fav_color }}</p>
+          {% else %}
+            <h2>{{ person.name }}</h2>
+            <p>{{ person.bio }}</p>
+            <p>Team {{ person.team }}</p>
+            <p>Woonplaats: {{ person.residency }}</p>
+            <p>Favoriete kleur: {{ person.fav_color }}</p>
+          {% endif %}
+        </div>
         <a
           class="person-circle"
-          style="outline: {{ person.fav_color }} 4px solid;"
-          href="/student/{{ person.id }}"
-          target="_blank">
+          style="outline: {{ person.fav_color }} .3vw solid;"
+          {% comment %} href="/student/{{ person.id }}"
+          target="_blank" {% endcomment %}
+        >
           <img
-            {% if person.mugshot %}
-              src="{{'https://fdnd.directus.app/assets/' | append:  person.mugshot | append:'?width=500' }}"
-            {% else %}
-              src="{{ person.avatar }}"
-            {% endif %}
-            src="https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500"
-            alt="Profile picture"
-        ></a>
+            src="{% if person.mugshot %}https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500{% else %}{{ person.avatar }}{% endif %}"
+            alt="Profile picture van {{ person.name }}"
+          >
+        </a>
       </article>
     {% endfor %}
   </section>
