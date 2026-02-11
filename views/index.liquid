@@ -1,10 +1,24 @@
-{% render 'partials/head.liquid', title: 'Squad page' %}
+{% render 'partials/head.liquid', title: 'Squad Channel' %}
 
-<h2>Students</h2>
-<ul>
-  {% for person in persons %}
-    <li><a href="/student/{{ person.id }}">{{ person.name }}</a></li>
-  {% endfor %}
-</ul>
+<main>
+  <div class="title-overlay">
+    <img src="img/SquadChannel.png">
+  </div>
+
+  <section class="onscreen-content-left">
+    <article class="onscreen-items-left">
+      <h1>Pagina in de maak...</h1>
+      <div class="wii-u-music-button"><img src="img/wii-u.svg" width="60vw"></div>
+    </article>
+  </section>
+
+  <section class="personen">
+    {% for person in persons %}
+      <article>
+        <a class="person-circle" style="outline: {{ person.fav_color }} 4px solid;" href="/student/{{ person.id }}" target="_blank"><img src="https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500" alt="Profile picture"></a>
+      </article>
+    {% endfor %}
+  </section>
+</main>
 
 {% render 'partials/foot.liquid', squads: squads %}
