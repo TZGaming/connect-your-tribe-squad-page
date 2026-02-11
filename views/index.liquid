@@ -1,20 +1,24 @@
 {% render 'partials/head.liquid', title: 'Squad Channel' %}
 
+{% comment %} Main content {% endcomment %}
 <main>
-  <div class="title-overlay">
+  <div class="title-overlay"> 
     <img src="img/SquadChannel.png">
   </div>
 
+  {% comment %} Zijbalk aan de linker kant van het scherm {% endcomment %}
   <section class="onscreen-content-left">
     <article class="onscreen-items-left">
       <div class="wii-u-music-button"><img src="img/wii-u.svg" width="60vw"></div>
     </article>
   </section>
 
+  {% comment %} Personen die op de website staan {% endcomment %}
   <section class="personen">
     {% for person in persons %}
       <article class="person-all">
         <div class="person-overlay">
+          {% comment %} Filter voor Gijs omdat hij een GIF van 300vw in z'n bio had (lol) {% endcomment %}
           {% if person.name == 'Gijs Nagtegaal' %}
             <h2>{{ person.name }}</h2>
             <p>Kut gijs, verander je bio</p>
