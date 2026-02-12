@@ -27,7 +27,7 @@ titleOverlay.addEventListener('click', function () {
 })
 
 // Gebruik audioCtx buffer om de sounds en muziek te pre-loaden
-let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer;
+let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer, personSelectBuffer, personDeselectBuffer;
 let isWiiUActive = false;
 
 async function loadAllSounds() {
@@ -36,13 +36,17 @@ async function loadAllSounds() {
             fetch('snd/MiiChannel.mp3'),
             fetch('snd/MiiMaker_WiiU.mp3'),
             fetch('snd/OK.mp3'),
-            fetch('snd/button_on.mp3')
+            fetch('snd/button_on.mp3'),
+            fetch('snd/select_person.mp3'),
+            fetch('snd/unselect_person.mp3')
         ]);
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
         musicWiiBuffer = await audioCtx.decodeAudioData(data[0]);
         musicWiiUBuffer = await audioCtx.decodeAudioData(data[1]);
         okButtonBuffer = await audioCtx.decodeAudioData(data[2]);
         onButtonBuffer = await audioCtx.decodeAudioData(data[3]);
+        personSelectBuffer = await audioCtx.decodeAudioData(data[4]);
+        personDeselectBuffer = await audioCtx.decodeAudioData(data[5]);
     } catch (err) {
         console.error(err);
     }
@@ -100,33 +104,51 @@ musicButton.addEventListener('click', () => {
 
 // Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
-    const onSource = audioCtx.createBufferSource();
-    onSource.buffer = onButtonBuffer;
-    onSource.connect(audioCtx.destination);
-    onSource.start(0);
+    const musicChangeSource = audioCtx.createBufferSource();
+    musicChangeSource.buffer = onButtonBuffer;
+    musicChangeSource.connect(audioCtx.destination);
+    musicChangeSource.start(0);
 })
 
 personCircles.forEach(circle => {
     circle.addEventListener('mouseenter', () => {
-        const onSource = audioCtx.createBufferSource();
-        onSource.buffer = onButtonBuffer;
-        onSource.connect(audioCtx.destination);
-        onSource.start(0);
-    });
-});
-
-personCircles.forEach(circle => {
-    circle.addEventListener('mouseenter', () => {
-        const onSource = audioCtx.createBufferSource();
-        onSource.buffer = onButtonBuffer;
-        onSource.connect(audioCtx.destination);
-        onSource.start(0);
+        // Check of er op dit moment iemand 'focused' is. 
+        // Als dat zo is, willen we GEEN hover geluid van de verborgen icoontjes.
+        const isAnyFocused = document.querySelector('.person-all.focused');
+        
+        if (!isAnyFocused) {
+            const onSource = audioCtx.createBufferSource();
+            onSource.buffer = onButtonBuffer;
+            onSource.connect(gainNode);
+            onSource.start(0);
+        }
     });
 });
 
 personCircles.forEach(circle => {
     circle.addEventListener('click', () => {
-        personenOverlay.forEach(overlay => overlay.classList.toggle('activate-overlay'));
+        const currentPerson = circle.closest('.person-all');
+        const overlay = currentPerson.querySelector('.person-overlay');
+        
+        const isOpen = overlay.classList.toggle('activate-overlay');
+
+        // NIEUW: Geef de aangeklikte persoon een 'focused' class
+        currentPerson.classList.toggle('focused', isOpen);
+
+        const soundSource = audioCtx.createBufferSource();
+        soundSource.buffer = isOpen ? personSelectBuffer : personDeselectBuffer;
+        soundSource.connect(audioCtx.destination);
+        soundSource.start(0);
+
+        personAll.forEach(person => {
+            if (person !== currentPerson) {
+                if (isOpen) {
+                    person.classList.add('hidden');
+                } else {
+                    person.classList.remove('hidden');
+                }
+            }
+        });
     });
 });
 

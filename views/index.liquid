@@ -3,13 +3,14 @@
 {% comment %} Main content {% endcomment %}
 <main>
   <div class="title-overlay"> 
-    <img src="img/SquadChannel.png">
+    <img src="img/SquadChannel.png" alt="Squad Channel Title Logo">
   </div>
 
   {% comment %} Zijbalk aan de linker kant van het scherm {% endcomment %}
   <section class="onscreen-content-left">
     <article class="onscreen-items-left">
-      <div class="wii-u-music-button"><img src="img/wii-u.svg" width="60vw"></div>
+      <div class="wii-u-music-button"><img src="img/wii-u.svg" alt="Change music" width="60vw"></div>
+      <div class="wii-u-music-button"></div>
     </article>
   </section>
 
@@ -30,20 +31,27 @@
             <p>{{ person.bio }}</p>
             <p>Team {{ person.team }}</p>
             <p>Woonplaats: {{ person.residency }}</p>
-            <p>Favoriete kleur: {{ person.fav_color }}</p>
+            <p>
+              Favoriete kleur:
+              <span class="color-display" style="background-color: {{ person.fav_color }};"></span>
+            </p>
           {% endif %}
         </div>
         <a
+          {% if person.name == 'Yassir Bouyi' %}
           class="person-circle"
-          style="outline: {{ person.fav_color }} .2rem solid;"
-          {% comment %} href="/student/{{ person.id }}"
-          target="_blank" {% endcomment %}
-        >
+          style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }}; background-color: #323232;">
+        </a>
+
+        {% else %}
+        <a
+          class="person-circle"
+          style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }};">
           <img
             src="{% if person.mugshot %}https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500{% else %}{{ person.avatar }}{% endif %}"
-            alt="Profile picture van {{ person.name }}"
-          >
+            alt="Profiel foto van {{ person.name }}">
         </a>
+        {% endif %}
       </article>
     {% endfor %}
   </section>
