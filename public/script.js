@@ -130,7 +130,7 @@ musicButton.addEventListener('click', () => {
 
 // Houd bij welke sortering word gebruikt (lokaal in JS)
 let currentSortIndex = 0;
-const sortOptions = ['id', 'name', 'birthdate', 'squad'];
+const sortOptions = ['id', 'name', 'birthdate', 'squad', 'team'];
 const sortStatusText = document.querySelector('#sort-status');
 
 sortButton.addEventListener('click', () => {

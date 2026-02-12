@@ -26,7 +26,7 @@
   {% comment %} Personen die op de website staan {% endcomment %}
   <section class="personen">
     {% for person in persons %}
-      <article class="person-all" data-name="{{ person.name | lowercase }}" data-id="{{ person.id }}" data-birthdate="{{ person.birthdate }}" data-squad="{% for squad in person.squads %}{% if squad.squad_id.name == '1I' or squad.squad_id.name == '1J' %}{{ squad.squad_id.name }}{% endif %}{% endfor %}">
+      <article class="person-all" data-name="{{ person.name | lowercase }}" data-id="{{ person.id }}" data-birthdate="{{ person.birthdate }}" data-team="{{ person.team }}" data-squad="{% for squad in person.squads %}{% if squad.squad_id.name == '1I' or squad.squad_id.name == '1J' %}{{ squad.squad_id.name }}{% endif %}{% endfor %}">
         <div class="person-overlay">
           {% if person.name == 'Gijs Nagtegaal' %}
             <h2>{{ person.name }}</h2>
