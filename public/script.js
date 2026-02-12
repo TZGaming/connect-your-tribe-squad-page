@@ -77,7 +77,7 @@ async function startBackgroundMusic() {
 
     setTimeout(() => {
         leftScreenContent.classList.add('activate');
-        personAll.forEach(personAll => personAll.classList.toggle('activate'));
+        personAll.forEach(personAll => personAll.classList.add('activate'));
         vinyl.classList.add('vinyl-rotate');
     }, 250);
 
@@ -128,38 +128,94 @@ musicButton.addEventListener('click', () => {
     isWiiUActive = !isWiiUActive;
 });
 
-sortButton.addEventListener('click', () => {
-    sortButton.classList.add('sort-activate');
+// Houd bij welke sortering word gebruikt (lokaal in JS)
+let currentSortIndex = 0;
+const sortOptions = ['id', 'name', 'birthdate', 'squad'];
+const sortStatusText = document.querySelector('#sort-status');
 
-    const sortSource = audioCtx.createBufferSource();
-    sortSource.buffer = sortWhistleBuffer;
-    sortSource.connect(audioCtx.destination);
-    sortSource.start(0);
+sortButton.addEventListener('click', () => {
+    currentSortIndex = (currentSortIndex + 1) % sortOptions.length;
+    const sortBy = sortOptions[currentSortIndex];
+
+    if (sortWhistleBuffer) {
+        const sortSource = audioCtx.createBufferSource();
+        sortSource.buffer = sortWhistleBuffer;
+        sortSource.connect(audioCtx.destination);
+        sortSource.start(0);
+    }
+    sortButton.classList.add('sort-activate');
+    sortButton.classList.add('no-interaction');
 
     setTimeout(() => {
+        personAll.forEach(personAll => personAll.classList.remove('activate'));
+    }, 200);
+
+    // Wacht 600ms en voer de sortering uit
+    setTimeout(() => {
+        const personenLijst = Array.from(document.querySelectorAll('.person-all'));
+
+        sortStatusText.textContent = sortBy;
+
+        personenLijst.sort((a, b) => {
+            let valA = a.dataset[sortBy] || '';
+            let valB = b.dataset[sortBy] || '';
+
+            let comparison = 0;
+
+            if (!isNaN(valA) && !isNaN(valB) && valA !== '' && valB !== '') {
+                comparison = parseFloat(valA) - parseFloat(valB);
+            } else {
+                comparison = valA.localeCompare(valB);
+            }
+
+            if (comparison === 0 && sortBy !== 'id') {
+                let idA = parseFloat(a.dataset.id);
+                let idB = parseFloat(b.dataset.id);
+                return idA - idB;
+            }
+
+            return comparison;
+        });
+
+        // Verplaats de elementen fysiek in de HTML
+        personenLijst.forEach(person => personenContainer.appendChild(person));
+
+        setTimeout(() => {
+            personAll.forEach(personAll => personAll.classList.add('activate'));
+        }, 10);
+
+        // Haal de animatie classes weer weg
         sortButton.classList.remove('sort-activate');
-    }, 600);
+        sortButton.classList.remove('no-interaction');
+    }, 500);
+});
+
+sortButton.addEventListener('mouseenter', () => {
+    const hoverSource = audioCtx.createBufferSource();
+    hoverSource.buffer = onButtonBuffer;
+    hoverSource.connect(audioCtx.destination);
+    hoverSource.start(0);
 })
 
 // Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
-    const musicChangeSource = audioCtx.createBufferSource();
-    musicChangeSource.buffer = onButtonBuffer;
-    musicChangeSource.connect(audioCtx.destination);
-    musicChangeSource.start(0);
+    const hoverSource = audioCtx.createBufferSource();
+    hoverSource.buffer = onButtonBuffer;
+    hoverSource.connect(audioCtx.destination);
+    hoverSource.start(0);
 })
 
 personCircles.forEach(circle => {
     circle.addEventListener('mouseenter', () => {
         // Check of er op dit moment iemand 'focused' is. 
-        // Als dat zo is, willen we GEEN hover geluid van de verborgen icoontjes.
+        // Zo niet, speel dan niet het hover geluid af
         const isAnyFocused = document.querySelector('.person-all.focused');
 
         if (!isAnyFocused) {
-            const onSource = audioCtx.createBufferSource();
-            onSource.buffer = onButtonBuffer;
-            onSource.connect(gainNode);
-            onSource.start(0);
+            const hover = audioCtx.createBufferSource();
+            hover.buffer = onButtonBuffer;
+            hover.connect(gainNode);
+            hover.start(0);
         }
     });
 });

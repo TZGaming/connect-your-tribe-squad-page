@@ -39,8 +39,7 @@ body {
     flex-direction: column;
     margin: 0;
     font-family: Rodin;
-    overflow-x: hidden;
-    perspective: 1000px;
+    overflow-x: hidden !important;
 }
 
 @font-face {
@@ -140,17 +139,22 @@ section {
                 margin-top: 0em !important;
             }
 
-            #whistle {
-                width: 80px;
-                height: 80px;
-                transition: .13s;
-                &:hover {
-                    transform: scale(1.07);
+            .whistle-container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                #whistle {
+                    width: 80px;
+                    height: 80px;
+                    transition: .13s;
+                    &:hover {
+                        transform: scale(1.07);
+                    }
                 }
-            }
 
-            .sort-activate {
-                animation: sort-activate .4s ease-out .15s forwards;
+                .sort-activate {
+                    animation: sort-activate .4s ease-out .15s forwards !important;
+                }
             }
 
             .music-button {
@@ -162,7 +166,6 @@ section {
                 justify-content: center;
                 transition: .13s;
                 position: relative;
-                cursor: pointer;
 
                 &:hover {
                     background-color: rgb(247, 247, 247);
@@ -206,7 +209,7 @@ section {
         gap: 1em;
 
         position: fixed;
-        top: 50%;
+        top: 55%;
         left: 50%;
         z-index: 10;
         width: 90vw;
@@ -247,6 +250,7 @@ section {
                 top: 20vh;
                 @media screen and (max-width: 700px) {
                     transform: scale(1.5);
+                    top: 33vh;
                 }
             }
 
@@ -287,20 +291,21 @@ section {
                 display: none;
                 background-color: rgb(224, 224, 224);
                 box-shadow: 0px 0px 8px 0px rgb(0, 0, 0);
-                outline: .15vw rgb(177, 177, 177) solid;
                 padding: 8%;
                 font-size: clamp(.1rem, 0.375rem + 2vw, .5rem);
                 position: absolute;
                 bottom: 100%;
                 z-index: 999;
-                border-radius: 1vw;
+                border-radius: 10px;
                 text-align: left;
                 width: 15vw;
                 max-height: 30vh;
                 overflow-y: auto;
                 transform-origin: bottom;
                 transform: scaleY(0);
+
                 @media screen and (max-width: 700px) {
+                    max-height: 35vh;
                     width: 45vw;
                 }
 

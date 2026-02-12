@@ -15,28 +15,49 @@
           <img id="muziek-img" src="img/Wii.svg" alt="Wii Muziek" width="40" height="40">
         </div>
       </div>
+      <div class="whistle-container">
         <img id="whistle" src="img/whistle.png" alt="Sorteren">
+        <span id="sort-status">id</span>
+      </div>
       </div>
     </article>
   </section>
 
   {% comment %} Personen die op de website staan {% endcomment %}
   <section class="personen">
-    {% assign sorted_persons = persons | sort: 'id' %}
-    {% for person in sorted_persons %}
-      <article class="person-all">
+    {% for person in persons %}
+      <article class="person-all" data-name="{{ person.name | lowercase }}" data-id="{{ person.id }}" data-birthdate="{{ person.birthdate }}" data-squad="{% for squad in person.squads %}{% if squad.squad_id.name == '1I' or squad.squad_id.name == '1J' %}{{ squad.squad_id.name }}{% endif %}{% endfor %}">
         <div class="person-overlay">
           {% if person.name == 'Gijs Nagtegaal' %}
             <h2>{{ person.name }}</h2>
             <p>Kut gijs, verander je bio</p>
             <p>Team {{ person.team }}</p>
+            <p>Squad 
+              {% for squad in person.squads %}
+                {% if squad.squad_id.name == '1I' or squad.squad_id.name == '1J' %}
+                  {{ squad.squad_id.name }}
+                {% endif %}
+              {% endfor %}
+            </p>
             <p>Woonplaats: {{ person.residency }}</p>
-            <p>Favoriete kleur: {{ person.fav_color }}</p>
+            <p>Geboortedatum: {{ person.birthdate }}</p>
+            <p>
+              Favoriete kleur:
+              <span class="color-display" style="background-color: {{ person.fav_color }};"></span>
+            </p>
           {% else %}
             <h2>{{ person.name }}</h2>
             <p>{{ person.bio }}</p>
             <p>Team {{ person.team }}</p>
+            <p>Squad 
+              {% for squad in person.squads %}
+                {% if squad.squad_id.name == '1I' or squad.squad_id.name == '1J' %}
+                  {{ squad.squad_id.name }}
+                {% endif %}
+              {% endfor %}
+            </p>
             <p>Woonplaats: {{ person.residency }}</p>
+            <p>Geboortedatum: {{ person.birthdate }}</p>
             <p>
               Favoriete kleur:
               <span class="color-display" style="background-color: {{ person.fav_color }};"></span>

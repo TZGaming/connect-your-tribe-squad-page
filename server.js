@@ -50,36 +50,31 @@ app.use(express.urlencoded({extended: true}))
 // Om Views weer te geven, heb je Routes nodig
 // Maak een GET route voor de index
 app.get('/', async function (request, response) {
-
-  // Haal alle personen uit de WHOIS API op, van dit jaar, gesorteerd op naam
-  const params = {
-    // Sorteer op naam
-    'sort': 'name',
-
-    // Geef aan welke data je per persoon wil terugkrijgen
-    'fields': '*,squads.*',
-
-    // Combineer meerdere filters
-    'filter[squads][squad_id][tribe][name]': 'FDND Jaar 1',
-    'filter[squads][squad_id][cohort]': '2526',
+  const params = new URLSearchParams({
+    'fields': '*,squads.squad_id.name',
+    // 1. Filter welke PERSONEN we ophalen (iemand die in 1I of 1J zit)
+    'filter[squads][squad_id][cohort][_eq]': '2526',
+    'filter[squads][squad_id][name][_in]': '1I,1J',
     
-    // Filter eventueel alleen op een bepaalde squad
-    // 'filter[squads][squad_id][name]': '1I',
-    // 'filter[squads][squad_id][name]': '1J',
+    // 2. Filter welke SQUADS we laten zien binnen die persoon
+    // Dit zorgt ervoor dat "Minor Web" niet in de lijst van de student verschijnt
+    'deep[squads][filter][squad_id][name][_in]': '1I,1J'
+  });
+
+  const apiUrl = `https://fdnd.directus.app/items/person?${params.toString()}`;
+
+  try {
+    const personResponse = await fetch(apiUrl);
+    const personResponseJSON = await personResponse.json();
+
+    response.render('index.liquid', {
+      persons: personResponseJSON.data, 
+      squads: squadResponseJSON.data
+    });
+  } catch (error) {
+    console.error("Fetch fout:", error);
   }
-  const personResponse = await fetch('https://fdnd.directus.app/items/person/?' + new URLSearchParams(params))
-
-  // En haal daarvan de JSON op
-  const personResponseJSON = await personResponse.json()
-
-  // personResponseJSON bevat gegevens van alle personen uit alle squads van dit jaar
-  // Toon eventueel alle data in de console
-  // console.log(personResponseJSON)
-
-  // Render index.liquid uit de views map en geef de opgehaalde data mee als variabele, genaamd persons
-  // Geef ook de eerder opgehaalde squad data mee aan de view
-  response.render('index.liquid', {persons: personResponseJSON.data, squads: squadResponseJSON.data})
-})
+});
 
 // Maak een POST route voor de index; hiermee kun je bijvoorbeeld formulieren afvangen
 app.post('/', async function (request, response) {
