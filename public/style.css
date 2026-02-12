@@ -1,6 +1,25 @@
 * {
-    cursor:
-        url("img/wii-pointer.png") 12 0, auto;
+    cursor: url("img/wii-pointer.png") 12 0, auto;
+}
+
+::-webkit-scrollbar {
+    cursor: url("img/wii-pointer.png") 12 0, pointer !important;
+    width: 13px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.2); /* Subtiel grijs/transparant */
+    border-radius: 20px;
+    border: 4px solid transparent;
+    background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 0, 0, 0.4);
 }
 
 html,
@@ -24,15 +43,13 @@ body {
     perspective: 1000px;
 }
 
-a,
-button,
-div {
-    cursor: url("img/wii-pointer.png") 12 0, pointer !important;
-}
-
 @font-face {
     font-family: Rodin;
     src: url(font/RodinNTLG.otf);
+}
+
+.no-interaction {
+    pointer-events: none !important;
 }
 
 /* Titel scherm unlock overlay */
@@ -107,42 +124,70 @@ main {
 
 section {
     margin: 1em;
-    position: fixed;
-    z-index: 999;
 
     &.onscreen-content-left {
         padding: 0;
         width: 100vw;
         height: 8%;
         article.onscreen-items-left {
-            position: fixed;
-            top: .5em;
-            left: -20em;
+            margin-top: -20em;
             display: flex;
             flex-direction: row;
             gap: 1em;
-            transition: left .35s ease-out;
+            transition: margin-top .35s ease-out;
 
             &.activate {
-                left: .75em !important;
+                margin-top: 0em !important;
             }
 
-            .wii-u-music-button {
-                background-color: white;
+            #whistle {
+                width: 80px;
+                height: 80px;
+                transition: .13s;
+                &:hover {
+                    transform: scale(1.07);
+                }
+            }
+
+            .sort-activate {
+                animation: sort-activate .4s ease-out .15s forwards;
+            }
+
+            .music-button {
                 width: 80px;
                 height: 80px;
                 border-radius: 100%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                outline: 2px rgb(190, 190, 190) solid;
-                transition: .2s;
+                transition: .13s;
+                position: relative;
                 cursor: pointer;
 
                 &:hover {
                     background-color: rgb(247, 247, 247);
-                    transform: scale(1.1);
+                    transform: scale(1.07);
                 }
+
+                .music-img-container {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    position: absolute;
+                    width: 60%;
+                    height: 60%;
+                    border-radius: 100%;
+                    background-color: white;
+                    box-sizing: border-box;
+                }
+
+                .music-img-container img[alt="Wii Muziek"] {
+                    width: 58%;
+                }
+            }
+
+            .vinyl-rotate {
+                animation: vinyl-rotate 4s linear 0s infinite;
             }
         }
 
@@ -196,16 +241,15 @@ section {
             }
 
             &.person-all.focused {
-                transform: scale(1.35); /* Iets groter voor dat Wii effect */
+                transform: scale(1.35);
                 z-index: 100;
-                padding: 2em; /* Wat extra ademruimte */
+                padding: 2em;
                 top: 20vh;
                 @media screen and (max-width: 700px) {
                     transform: scale(1.5);
                 }
             }
 
-            /* De anderen die verdwijnen */
             &.person-all.hidden {
                 opacity: 0;
                 transform: scale(0.8);
@@ -244,7 +288,7 @@ section {
                 background-color: rgb(224, 224, 224);
                 box-shadow: 0px 0px 8px 0px rgb(0, 0, 0);
                 outline: .15vw rgb(177, 177, 177) solid;
-                padding: 1vw;
+                padding: 8%;
                 font-size: clamp(.1rem, 0.375rem + 2vw, .5rem);
                 position: absolute;
                 bottom: 100%;
@@ -258,6 +302,16 @@ section {
                 transform: scaleY(0);
                 @media screen and (max-width: 700px) {
                     width: 45vw;
+                }
+
+                ul {
+                    li {
+                        a {
+                            padding: 0;
+                            margin: 0;
+                            height: 1%;
+                        }
+                    }
                 }
 
                 .color-display {
@@ -286,6 +340,25 @@ section {
 .activate-overlay {
     display: unset !important;
     animation: overlay-scale .2s ease-out .1s forwards;
+}
+
+@keyframes vinyl-rotate {
+    from { rotate: 0deg; }
+    to { rotate: 360deg; }
+}
+
+@keyframes sort-activate {
+    0% { rotate: 0deg; }
+    10% { rotate: 10deg; }
+    20% { rotate: -10deg; }
+    30% { rotate: 10deg; }
+    40% { rotate: -10deg; }
+    50% { rotate: 10deg; }
+    60% { rotate: -10deg; }
+    70% { rotate: 10deg; }
+    80% { rotate: -10deg; }
+    90% { rotate: 10deg; }
+    100% { rotate: 0deg; }
 }
 
 @keyframes overlay-scale {

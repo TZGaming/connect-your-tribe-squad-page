@@ -1,7 +1,9 @@
 // Variabelen
 let titleOverlay = document.querySelector('.title-overlay')
 let leftScreenContent = document.querySelector('.onscreen-items-left')
-let musicButton = document.querySelector('.wii-u-music-button');
+let musicButton = document.querySelector('.music-button');
+let vinyl = document.querySelector('#vinyl');
+let sortButton = document.querySelector('#whistle');
 let personenContainer = document.querySelector('.personen');
 let personAll = document.querySelectorAll('.person-all');
 let personCircles = document.querySelectorAll('.personen article a');
@@ -21,13 +23,19 @@ let gainWiiU = audioCtx.createGain();
 gainWii.connect(gainNode);
 gainWiiU.connect(gainNode);
 
+// Kan pas interacteren als alle sounds zijn geladen uit de buffer
+titleOverlay.classList.add('no-interaction')
+setTimeout(() => {
+    titleOverlay.classList.remove('no-interaction')
+}, 500);
+
 // Start boot sequence functie on click op title screen
 titleOverlay.addEventListener('click', function () {
     startBackgroundMusic()
 })
 
 // Gebruik audioCtx buffer om de sounds en muziek te pre-loaden
-let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer, personSelectBuffer, personDeselectBuffer;
+let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer, personSelectBuffer, personDeselectBuffer, sortWhistleBuffer;
 let isWiiUActive = false;
 
 async function loadAllSounds() {
@@ -38,7 +46,8 @@ async function loadAllSounds() {
             fetch('snd/OK.mp3'),
             fetch('snd/button_on.mp3'),
             fetch('snd/select_person.mp3'),
-            fetch('snd/unselect_person.mp3')
+            fetch('snd/unselect_person.mp3'),
+            fetch('snd/sort.mp3')
         ]);
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
         musicWiiBuffer = await audioCtx.decodeAudioData(data[0]);
@@ -47,6 +56,7 @@ async function loadAllSounds() {
         onButtonBuffer = await audioCtx.decodeAudioData(data[3]);
         personSelectBuffer = await audioCtx.decodeAudioData(data[4]);
         personDeselectBuffer = await audioCtx.decodeAudioData(data[5]);
+        sortWhistleBuffer = await audioCtx.decodeAudioData(data[6]);
     } catch (err) {
         console.error(err);
     }
@@ -68,6 +78,7 @@ async function startBackgroundMusic() {
     setTimeout(() => {
         leftScreenContent.classList.add('activate');
         personAll.forEach(personAll => personAll.classList.toggle('activate'));
+        vinyl.classList.add('vinyl-rotate');
     }, 250);
 
     // Muziek tegelijk afspelen, Wii U standaard muted
@@ -92,15 +103,43 @@ async function startBackgroundMusic() {
 // Verander muziek met een button, switched tussen Wii en Wii U met behulp van booleans
 // Heeft ook een crossfade van 0.1s
 musicButton.addEventListener('click', () => {
+    const iconImg = musicButton.querySelector('img[alt="Wii U Muziek"], img[alt="Wii Muziek"]');
+
     if (isWiiUActive) {
         gainWiiU.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         gainWii.gain.setTargetAtTime(0.8, audioCtx.currentTime, 0.1);
+
+        // SVG veranderen naar Wii
+        if (iconImg) {
+            iconImg.src = 'img/Wii.svg';
+            iconImg.alt = 'Wii Muziek';
+        }
     } else {
         gainWii.gain.setTargetAtTime(0, audioCtx.currentTime, 0.1);
         gainWiiU.gain.setTargetAtTime(0.8, audioCtx.currentTime, 0.1);
+
+        // SVG veranderen naar Wii U
+        if (iconImg) {
+            iconImg.src = 'img/wii-u.svg';
+            iconImg.alt = 'Wii U Muziek';
+        }
     }
+
     isWiiUActive = !isWiiUActive;
 });
+
+sortButton.addEventListener('click', () => {
+    sortButton.classList.add('sort-activate');
+
+    const sortSource = audioCtx.createBufferSource();
+    sortSource.buffer = sortWhistleBuffer;
+    sortSource.connect(audioCtx.destination);
+    sortSource.start(0);
+
+    setTimeout(() => {
+        sortButton.classList.remove('sort-activate');
+    }, 600);
+})
 
 // Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
@@ -115,7 +154,7 @@ personCircles.forEach(circle => {
         // Check of er op dit moment iemand 'focused' is. 
         // Als dat zo is, willen we GEEN hover geluid van de verborgen icoontjes.
         const isAnyFocused = document.querySelector('.person-all.focused');
-        
+
         if (!isAnyFocused) {
             const onSource = audioCtx.createBufferSource();
             onSource.buffer = onButtonBuffer;
@@ -129,7 +168,7 @@ personCircles.forEach(circle => {
     circle.addEventListener('click', () => {
         const currentPerson = circle.closest('.person-all');
         const overlay = currentPerson.querySelector('.person-overlay');
-        
+
         const isOpen = overlay.classList.toggle('activate-overlay');
 
         // NIEUW: Geef de aangeklikte persoon een 'focused' class

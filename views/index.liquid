@@ -2,24 +2,30 @@
 
 {% comment %} Main content {% endcomment %}
 <main>
-  <div class="title-overlay"> 
+  <div class="title-overlay">
     <img src="img/SquadChannel.png" alt="Squad Channel Title Logo">
   </div>
 
   {% comment %} Zijbalk aan de linker kant van het scherm {% endcomment %}
   <section class="onscreen-content-left">
     <article class="onscreen-items-left">
-      <div class="wii-u-music-button"><img src="img/wii-u.svg" alt="Change music" width="60"></div>
-      <div class="wii-u-music-button"></div>
+      <div class="music-button">
+        <img id="vinyl" src="img/vinyl.png" alt="Vinyl" width="90">
+        <div class="music-img-container">
+          <img id="muziek-img" src="img/Wii.svg" alt="Wii Muziek" width="40" height="40">
+        </div>
+      </div>
+        <img id="whistle" src="img/whistle.png" alt="Sorteren">
+      </div>
     </article>
   </section>
 
   {% comment %} Personen die op de website staan {% endcomment %}
   <section class="personen">
-    {% for person in persons %}
+    {% assign sorted_persons = persons | sort: 'id' %}
+    {% for person in sorted_persons %}
       <article class="person-all">
         <div class="person-overlay">
-          {% comment %} Filter voor Gijs omdat hij een GIF van 300vw in z'n bio had (lol) {% endcomment %}
           {% if person.name == 'Gijs Nagtegaal' %}
             <h2>{{ person.name }}</h2>
             <p>Kut gijs, verander je bio</p>
@@ -39,12 +45,11 @@
         </div>
 
         {% if person.name == 'Yassir Bouyi' %}
-        <a class="person-circle" style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }}; background-color: #323232;"></a>
-
+          <a class="person-circle" style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }}; background-color: #323232;"></a>
         {% else %}
-        <a class="person-circle" style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }};">
-          <img src="{% if person.mugshot %}https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500{% else %}{{ person.avatar }}{% endif %}" alt="Profiel foto van {{ person.name }}">
-        </a>
+          <a class="person-circle" style="outline: {{ person.fav_color }} .2rem solid; box-shadow: 0px 0px 15px 0px {{ person.fav_color }};">
+            <img src="{% if person.mugshot %}https://fdnd.directus.app/assets/{{ person.mugshot }}?width=500{% else %}{{ person.avatar }}{% endif %}" alt="Profiel foto van {{ person.name }}">
+          </a>
         {% endif %}
       </article>
     {% endfor %}
