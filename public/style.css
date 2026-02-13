@@ -1,5 +1,7 @@
-* {
-    cursor: url("img/wii-pointer.png") 12 0, auto;
+*,
+*::before,
+*::after {
+    cursor: inherit !important;
 }
 
 ::-webkit-scrollbar {
@@ -8,11 +10,12 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: transparent; 
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.2); /* Subtiel grijs/transparant */
+    background-color: rgba(0, 0, 0, 0.2);
+    /* Subtiel grijs/transparant */
     border-radius: 20px;
     border: 4px solid transparent;
     background-clip: content-box;
@@ -24,6 +27,7 @@
 
 html,
 body {
+    cursor: url("img/wii-pointer.png") 12 0, auto !important;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -32,7 +36,7 @@ body {
 
 body {
     background-image: url('img/ground.jpg');
-    background-size: 550px 550px;
+    background-size: 35rem;
     background-repeat: repeat;
 
     display: flex;
@@ -40,6 +44,12 @@ body {
     margin: 0;
     font-family: Rodin;
     overflow-x: hidden !important;
+    transition: background-blend-mode, background-color .2s;
+
+    &.is-window-open {
+        background-blend-mode: multiply;
+        background-color: #050542;
+    }
 }
 
 @font-face {
@@ -49,6 +59,7 @@ body {
 
 .no-interaction {
     pointer-events: none !important;
+    cursor: url("img/wii-pointer.png") 12 0, auto !important;
 }
 
 /* Titel scherm unlock overlay */
@@ -115,7 +126,7 @@ body {
 
 /* Main content */
 main {
-    position: relative;
+    position: absolute;
     z-index: 10;
     width: 100%;
     height: 100%;
@@ -128,6 +139,7 @@ section {
         padding: 0;
         width: 100vw;
         height: 8%;
+
         article.onscreen-items-left {
             margin-top: -20em;
             display: flex;
@@ -143,10 +155,18 @@ section {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
+                color: black;
+                transition: color .2s;
+
+                &.text-color {
+                    color: white !important;
+                }
+
                 #whistle {
                     width: 80px;
                     height: 80px;
                     transition: .13s;
+
                     &:hover {
                         transform: scale(1.07);
                     }
@@ -155,6 +175,10 @@ section {
                 .sort-activate {
                     animation: sort-activate .4s ease-out .15s forwards !important;
                 }
+            }
+
+            .whistle-disable {
+                display: none !important;
             }
 
             .music-button {
@@ -166,6 +190,7 @@ section {
                 justify-content: center;
                 transition: .13s;
                 position: relative;
+                box-shadow: 0px 0px 8px 8px rgba(255, 255, 255, 0.4);
 
                 &:hover {
                     background-color: rgb(247, 247, 247);
@@ -199,6 +224,37 @@ section {
             font-size: clamp(1rem, 0.375rem + 2vw, 1.5rem);
             white-space: nowrap;
         }
+
+        .FDND-button {
+            width: 80px;
+            height: 80px;
+            border-radius: 100%;
+            background-color: #66e5bf;
+            color: #050542;
+            outline: 3px #050542 solid;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: .13s;
+            position: relative;
+            user-select: none;
+            text-align: center;
+            line-height: 20px;
+            &:hover {
+                transform: scale(1.07);
+                box-shadow: 0px 0px 8px 8px #66e5bf81;
+            }
+
+            &.window-open-invert {
+                background-color: #050542 !important;
+                color: #66e5bf !important;
+                outline: 3px #66e5bf solid !important;
+                box-shadow: 0px 0px 8px 8px #66e5bf81;
+                &:hover {
+                    background-color: #66e5bf23 !important;
+                }
+            }
+        }
     }
 
     &.personen {
@@ -208,8 +264,8 @@ section {
         align-items: center;
         gap: 1em;
 
-        position: fixed;
-        top: 55%;
+        position: absolute;
+        top: 54%;
         left: 50%;
         z-index: 10;
         width: 90vw;
@@ -221,7 +277,6 @@ section {
         }
 
         transform: translate(-50%, -50%) scale(1);
-        pointer-events: none;
         transition: transform .5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
         article {
@@ -248,9 +303,10 @@ section {
                 z-index: 100;
                 padding: 2em;
                 top: 20vh;
+
                 @media screen and (max-width: 700px) {
                     transform: scale(1.5);
-                    top: 33vh;
+                    top: 23vh;
                 }
             }
 
@@ -305,7 +361,7 @@ section {
                 transform: scaleY(0);
 
                 @media screen and (max-width: 700px) {
-                    max-height: 35vh;
+                    max-height: 31vh;
                     width: 45vw;
                 }
 
@@ -342,31 +398,94 @@ section {
     }
 }
 
+iframe {
+    display: flex;
+    position: absolute;
+    width: 100vw;
+    height: 83%;
+    opacity: 1;
+    pointer-events: none;
+    bottom: 0;
+    z-index: 15;
+    border: none;
+    transition: .2s;
+    transform: scaleY(0%);
+    transform-origin: bottom;
+}
+
+.activate-iframe {
+    opacity: 1 !important;
+    transform: scaleY(100%) !important;
+    pointer-events: all !important;
+}
+
 .activate-overlay {
     display: unset !important;
     animation: overlay-scale .2s ease-out .1s forwards;
 }
 
 @keyframes vinyl-rotate {
-    from { rotate: 0deg; }
-    to { rotate: 360deg; }
+    from {
+        rotate: 0deg;
+    }
+
+    to {
+        rotate: 360deg;
+    }
 }
 
 @keyframes sort-activate {
-    0% { rotate: 0deg; }
-    10% { rotate: 10deg; }
-    20% { rotate: -10deg; }
-    30% { rotate: 10deg; }
-    40% { rotate: -10deg; }
-    50% { rotate: 10deg; }
-    60% { rotate: -10deg; }
-    70% { rotate: 10deg; }
-    80% { rotate: -10deg; }
-    90% { rotate: 10deg; }
-    100% { rotate: 0deg; }
+    0% {
+        rotate: 0deg;
+    }
+
+    10% {
+        rotate: 10deg;
+    }
+
+    20% {
+        rotate: -10deg;
+    }
+
+    30% {
+        rotate: 10deg;
+    }
+
+    40% {
+        rotate: -10deg;
+    }
+
+    50% {
+        rotate: 10deg;
+    }
+
+    60% {
+        rotate: -10deg;
+    }
+
+    70% {
+        rotate: 10deg;
+    }
+
+    80% {
+        rotate: -10deg;
+    }
+
+    90% {
+        rotate: 10deg;
+    }
+
+    100% {
+        rotate: 0deg;
+    }
 }
 
 @keyframes overlay-scale {
-    from { transform: scaleY(0); }
-    to { transform: scaleY(1); }
+    from {
+        transform: scaleY(0);
+    }
+
+    to {
+        transform: scaleY(1);
+    }
 }

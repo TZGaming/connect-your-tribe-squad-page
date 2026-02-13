@@ -1,9 +1,14 @@
 // Variabelen
+let body = document.querySelector('body')
 let titleOverlay = document.querySelector('.title-overlay')
 let leftScreenContent = document.querySelector('.onscreen-items-left')
 let musicButton = document.querySelector('.music-button');
 let vinyl = document.querySelector('#vinyl');
+let sortContainer = document.querySelector('.whistle-container');
 let sortButton = document.querySelector('#whistle');
+let FDNDButton = document.querySelector('.FDND-button');
+let FDNDFrameContainer = document.querySelector('.fdnd-admin');
+let FDNDFrame = document.querySelector('#fdnd-iframe');
 let personenContainer = document.querySelector('.personen');
 let personAll = document.querySelectorAll('.person-all');
 let personCircles = document.querySelectorAll('.personen article a');
@@ -35,7 +40,7 @@ titleOverlay.addEventListener('click', function () {
 })
 
 // Gebruik audioCtx buffer om de sounds en muziek te pre-loaden
-let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer, personSelectBuffer, personDeselectBuffer, sortWhistleBuffer;
+let musicWiiBuffer, musicWiiUBuffer, okButtonBuffer, onButtonBuffer, personSelectBuffer, personDeselectBuffer, sortWhistleBuffer, onButtonOptionBuffer;
 let isWiiUActive = false;
 
 async function loadAllSounds() {
@@ -47,7 +52,10 @@ async function loadAllSounds() {
             fetch('snd/button_on.mp3'),
             fetch('snd/select_person.mp3'),
             fetch('snd/unselect_person.mp3'),
-            fetch('snd/sort.mp3')
+            fetch('snd/sort.mp3'),
+            fetch('snd/button_on_option.mp3'),
+            fetch('snd/window_open.mp3'),
+            fetch('snd/window_close.mp3')
         ]);
         const data = await Promise.all(responses.map(res => res.arrayBuffer()));
         musicWiiBuffer = await audioCtx.decodeAudioData(data[0]);
@@ -57,6 +65,9 @@ async function loadAllSounds() {
         personSelectBuffer = await audioCtx.decodeAudioData(data[4]);
         personDeselectBuffer = await audioCtx.decodeAudioData(data[5]);
         sortWhistleBuffer = await audioCtx.decodeAudioData(data[6]);
+        onButtonOptionBuffer = await audioCtx.decodeAudioData(data[7]);
+        openWindowBuffer = await audioCtx.decodeAudioData(data[8]);
+        closeWindowBuffer = await audioCtx.decodeAudioData(data[9]);
     } catch (err) {
         console.error(err);
     }
@@ -132,8 +143,12 @@ musicButton.addEventListener('click', () => {
 let currentSortIndex = 0;
 const sortOptions = ['id', 'name', 'birthdate', 'squad', 'team'];
 const sortStatusText = document.querySelector('#sort-status');
+let isSorting = false;
 
 sortButton.addEventListener('click', () => {
+    if (isSorting) return;
+    isSorting = true;
+
     currentSortIndex = (currentSortIndex + 1) % sortOptions.length;
     const sortBy = sortOptions[currentSortIndex];
 
@@ -144,7 +159,6 @@ sortButton.addEventListener('click', () => {
         sortSource.start(0);
     }
     sortButton.classList.add('sort-activate');
-    sortButton.classList.add('no-interaction');
 
     setTimeout(() => {
         personAll.forEach(personAll => personAll.classList.remove('activate'));
@@ -186,21 +200,57 @@ sortButton.addEventListener('click', () => {
 
         // Haal de animatie classes weer weg
         sortButton.classList.remove('sort-activate');
-        sortButton.classList.remove('no-interaction');
+        isSorting = false;
     }, 500);
 });
 
-sortButton.addEventListener('mouseenter', () => {
-    const hoverSource = audioCtx.createBufferSource();
-    hoverSource.buffer = onButtonBuffer;
-    hoverSource.connect(audioCtx.destination);
-    hoverSource.start(0);
-})
+
+let iFrameActive = false;
+
+FDNDButton.addEventListener('click', () => {
+    iFrameActive = !iFrameActive;
+    const source = audioCtx.createBufferSource();
+    
+    if (iFrameActive) {
+        source.buffer = openWindowBuffer;
+        body.classList.add('is-window-open');
+        FDNDButton.classList.add('window-open-invert');
+        isSorting = true;
+        sortContainer.classList.add('text-color');
+        personAll.forEach(personAll => personAll.classList.remove('activate'));
+    } else {
+        source.buffer = closeWindowBuffer;
+        body.classList.remove('is-window-open');
+        FDNDButton.classList.remove('window-open-invert');
+        isSorting = false;
+        sortContainer.classList.remove('text-color');
+        personAll.forEach(personAll => personAll.classList.add('activate'));
+    }
+
+    source.connect(audioCtx.destination);
+    source.start(0);
+
+    FDNDFrame.classList.toggle('activate-iframe');
+});
 
 // Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
     const hoverSource = audioCtx.createBufferSource();
-    hoverSource.buffer = onButtonBuffer;
+    hoverSource.buffer = onButtonOptionBuffer;
+    hoverSource.connect(audioCtx.destination);
+    hoverSource.start(0);
+})
+
+sortButton.addEventListener('mouseenter', () => {
+    const hoverSource = audioCtx.createBufferSource();
+    hoverSource.buffer = onButtonOptionBuffer;
+    hoverSource.connect(audioCtx.destination);
+    hoverSource.start(0);
+})
+
+FDNDButton.addEventListener('mouseenter', () => {
+    const hoverSource = audioCtx.createBufferSource();
+    hoverSource.buffer = onButtonOptionBuffer;
     hoverSource.connect(audioCtx.destination);
     hoverSource.start(0);
 })
@@ -230,6 +280,7 @@ personCircles.forEach(circle => {
         // NIEUW: Geef de aangeklikte persoon een 'focused' class
         currentPerson.classList.toggle('focused', isOpen);
 
+
         const soundSource = audioCtx.createBufferSource();
         soundSource.buffer = isOpen ? personSelectBuffer : personDeselectBuffer;
         soundSource.connect(audioCtx.destination);
@@ -239,8 +290,10 @@ personCircles.forEach(circle => {
             if (person !== currentPerson) {
                 if (isOpen) {
                     person.classList.add('hidden');
+                    sortContainer.classList.add('whistle-disable');
                 } else {
                     person.classList.remove('hidden');
+                    sortContainer.classList.remove('whistle-disable');
                 }
             }
         });
