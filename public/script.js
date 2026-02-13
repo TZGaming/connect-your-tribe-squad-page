@@ -233,6 +233,20 @@ FDNDButton.addEventListener('click', () => {
     FDNDFrame.classList.toggle('activate-iframe');
 });
 
+const iframe = document.querySelector('iframe'); 
+
+// Boolean zodat hij niet meteen herlaadt zodra de iframe voor het eerst laadt
+let initialLoad = true;
+
+iframe.addEventListener('load', function() {
+    // Als de iframe herlaadt, herlaadt dan ook de website. Zo update de content daar ook 
+    if (initialLoad) {
+        initialLoad = false;
+        return;
+    }
+        window.location.reload();
+});
+
 // Hover geluiden
 musicButton.addEventListener('mouseenter', () => {
     const hoverSource = audioCtx.createBufferSource();
@@ -276,8 +290,6 @@ personCircles.forEach(circle => {
         const overlay = currentPerson.querySelector('.person-overlay');
 
         const isOpen = overlay.classList.toggle('activate-overlay');
-
-        // NIEUW: Geef de aangeklikte persoon een 'focused' class
         currentPerson.classList.toggle('focused', isOpen);
 
 

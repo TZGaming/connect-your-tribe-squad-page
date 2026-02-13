@@ -42,7 +42,7 @@
               {% endfor %}
             </p>
             <p>Woonplaats: {{ person.residency }}</p>
-            <p>Geboortedatum: {{ person.birthdate }}</p>
+            <p>Geboortedatum: {{ person.birthdate | date: "%d %B %Y" }}</p>
             <p>
               Favoriete kleur:
               <span class="color-display" style="background-color: {{ person.fav_color }};"></span>
@@ -59,7 +59,7 @@
               {% endfor %}
             </p>
             <p>Woonplaats: {{ person.residency }}</p>
-            <p>Geboortedatum: {{ person.birthdate }}</p>
+            <p>Geboortedatum: {{ person.birthdate | date: "%d %B %Y" }}</p>
             <p>
               Favoriete kleur:
               <span class="color-display" style="background-color: {{ person.fav_color }};"></span>
