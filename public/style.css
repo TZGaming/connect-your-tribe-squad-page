@@ -273,7 +273,7 @@ section {
 
         @media screen and (max-width: 700px) {
             left: 47%;
-            top: 57%;
+            top: 61%;
         }
 
         transform: translate(-50%, -50%) scale(1);
